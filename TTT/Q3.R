@@ -10,11 +10,10 @@ mcc <- read_json("D:/Education/Data Science/Programming with R/FinalProject/mcc_
   mutate(ind=gsub("\\X", "", ind)) %>% 
   rename(mcc=ind, transaction_type=values)
 
-mcc
-
 #Since there are a lot to process I will segment the data
 
 df_selected <- data %>% select(date, amount, use_chip, merchant_city, mcc)
+
 #Joining mcc data set with this
 
 df_selected$mcc <- as.character(df_selected$mcc)
@@ -27,6 +26,11 @@ df_selected$amount <- gsub("^-", "", df_selected$amount)
 df_selected$amount <- gsub("-", "", df_selected$amount)
 
 df_selected$amount <- as.numeric(df_selected$amount)
+
+#Changing the "Chip Transaction" to "Online Transaction" for data consistency
+
+df_selected <- df_selected %>% 
+  mutate(use_chip = ifelse(use_chip == "Chip Transaction", "Online Transaction", use_chip))
 
 #Is there a difference in spending behavior 
 #between online (chip-based) and in-store (swipe-based) transactions?
@@ -50,8 +54,8 @@ swipe_based_stats <- df_selected %>% filter(use_chip == "Swipe Transaction") %>%
     std_amount = sd(amount, na.rm = TRUE)
   )
 
-#chip_based_stats
-#swipe_based_stats
+chip_based_stats
+swipe_based_stats
 
 #The number of transactions for each type and payment method
 top_transactions <- df_selected %>%
@@ -61,9 +65,6 @@ top_transactions <- df_selected %>%
   group_by(use_chip) %>%
   slice_head(n = 5)
 
-print(top_transactions)
-
-# Plot the data using ggplot2
 ggplot(top_transactions, aes(x = reorder(transaction_type, -count), y = count, fill = use_chip)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(title = "Top 5 Transaction Types by Payment Method", x = "Transaction Type", y = "Count") +
@@ -80,9 +81,6 @@ payment_by_location <- df_selected %>%
   ungroup() %>% 
   arrange(desc(count))
 
-print(payment_by_location)
-
-# Plot the data with subplots for each payment method
 ggplot(payment_by_location, aes(x = reorder(merchant_city, -count), y = count, fill = use_chip)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(title = "Top 5 Cities by Payment Method", x = "Merchant City", y = "Count of Transactions") +
