@@ -1,6 +1,7 @@
 library(dplyr)
 library(ggplot2)
 library(jsonlite)
+library(ggthemes)
 
 data <- transactions_data
 #head(data)
@@ -67,9 +68,9 @@ top_transactions <- df_selected %>%
 
 ggplot(top_transactions, aes(x = reorder(transaction_type, -count), y = count, fill = use_chip)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Top 5 Transaction Types by Payment Method", x = "Transaction Type", y = "Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 70, hjust = 1))
+  labs(title = "Top 5 Transaction Types by Payment Method", x = "Transaction Type", y = "Count", color = "Payment Method") +
+  theme_economist() +
+  theme(axis.text.x = element_text(angle = 70, hjust=1, vjust=1))
 
 # Payment Method Based on Merchant City
 payment_by_location <- df_selected %>%
@@ -83,9 +84,9 @@ payment_by_location <- df_selected %>%
 
 ggplot(payment_by_location, aes(x = reorder(merchant_city, -count), y = count, fill = use_chip)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Top 5 Cities by Payment Method", x = "Merchant City", y = "Count of Transactions") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Top 5 Cities by Payment Method", x = "Merchant City", y = "Total Transactions", color = "Payment Methods") +
+  theme_economist() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust=1)) +
   facet_wrap(~ use_chip, scales = "free_y", ncol = 1)
 
 #TimeSeriesAnalysis on Payment Method Overtime
@@ -97,9 +98,9 @@ time_series_data <- df_selected %>%
 
 ggplot(time_series_data, aes(x = date, y = total_amount, color = use_chip, group = use_chip)) +
   geom_line(size = 0.2) +
-  labs(title = "Time Series Analysis of Payment Methods", x = "Date", y = "Total Amount") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  labs(title = "Time Series Analysis of Payment Methods", x = "Date", y = "Total Amount", color = "Payment Methods") +
+  theme_economist() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1, vjust=1))
 
 
 
